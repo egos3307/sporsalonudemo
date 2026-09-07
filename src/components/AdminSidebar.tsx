@@ -16,11 +16,14 @@ import {
   Building2,
   ChevronRight,
   Compass,
+  Globe,
+  ExternalLink,
 } from 'lucide-react';
 import NextLink from 'next/link';
 
 interface AdminSidebarProps {
   gymName?: string;
+  gymSlug?: string;
   gymLogo?: string | null;
   primaryColor?: string;
   role?: string;
@@ -29,6 +32,7 @@ interface AdminSidebarProps {
 
 export default function AdminSidebar({
   gymName = 'FitZone Pro Club',
+  gymSlug = 'fitzone',
   gymLogo,
   primaryColor = '#2563eb',
   role = 'GYM_ADMIN',
@@ -180,8 +184,26 @@ export default function AdminSidebar({
         })}
       </nav>
 
-      {/* Member Portal Switcher Shortcut */}
-      <div className="p-3 border-t border-slate-200 dark:border-slate-800">
+      {/* Member Portal & Gym Website Switcher */}
+      <div className="p-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
+        {/* Gym Public Website */}
+        <a
+          href={`/salon/${gymSlug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition shadow-sm"
+        >
+          <div className="flex items-center gap-2">
+            <span className="text-base">🌐</span>
+            <div>
+              <p className="font-bold text-slate-900 dark:text-white">Salon Web Sitem</p>
+              <p className="text-[10px] text-emerald-600 dark:text-emerald-400">Canlı siteyi aç</p>
+            </div>
+          </div>
+          <ExternalLink className="w-3.5 h-3.5 text-emerald-500" />
+        </a>
+
+        {/* Member Mobile Portal */}
         <NextLink
           href="/member"
           className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -199,11 +221,18 @@ export default function AdminSidebar({
         {/* Logout */}
         <button
           onClick={handleLogout}
-          className="w-full mt-2 flex items-center gap-3 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition"
+          className="w-full flex items-center gap-3 px-3 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition"
         >
           <LogOut className="w-4 h-4" />
           <span>Güvenli Çıkış Yap</span>
         </button>
+
+        {/* GymOS Platform Watermark (Only visible to admin) */}
+        <div className="pt-1 text-center">
+          <span className="text-[10px] text-slate-400 dark:text-slate-600 font-mono tracking-wider">
+            GymOS • v2.4 SaaS
+          </span>
+        </div>
       </div>
     </aside>
   );

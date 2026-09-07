@@ -56,10 +56,10 @@ export default function RegisterPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <NextLink href="/" className="inline-flex items-center gap-2.5 mb-6">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <Dumbbell className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <Dumbbell className="w-5 h-5 text-black" />
           </div>
-          <span className="font-extrabold text-xl tracking-tight text-white">FitPulse SaaS</span>
+          <span className="font-extrabold text-xl tracking-tight text-white">GymOS</span>
         </NextLink>
 
         <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
@@ -67,7 +67,7 @@ export default function RegisterPage() {
         </h2>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold mt-2">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>7 Gün Boyunca Tamamen Ücretsiz Deneyin</span>
+          <span>7 Gün Ücretsiz • Özel Web Siteniz & 0-Paneliniz Hazır Açılır</span>
         </div>
       </div>
 

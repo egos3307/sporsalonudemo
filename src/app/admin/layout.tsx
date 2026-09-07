@@ -50,6 +50,7 @@ export default async function AdminLayout({
       {/* Sidebar */}
       <AdminSidebar
         gymName={gym?.name || 'FitZone Club'}
+        gymSlug={gym?.slug || 'fitzone'}
         gymLogo={gym?.logo}
         primaryColor={gym?.primaryColor || '#2563eb'}
         role={user.role}

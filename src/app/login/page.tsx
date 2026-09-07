@@ -58,10 +58,10 @@ export default function LoginPage() {
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <NextLink href="/" className="inline-flex items-center gap-2.5 mb-6">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/20">
-            <Dumbbell className="w-5 h-5 text-white" />
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <Dumbbell className="w-5 h-5 text-black" />
           </div>
-          <span className="font-extrabold text-xl tracking-tight text-white">FitPulse SaaS</span>
+          <span className="font-extrabold text-xl tracking-tight text-white">GymOS</span>
         </NextLink>
 
         <h2 className="text-2xl font-extrabold text-white tracking-tight">

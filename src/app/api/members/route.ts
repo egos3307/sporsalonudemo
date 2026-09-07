@@ -73,7 +73,19 @@ export async function GET(req: Request) {
       orderBy: { createdAt: 'desc' },
     });
 
-    return NextResponse.json({ success: true, members });
+    const gym = await prisma.gym.findUnique({
+      where: { id: context.gymId },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        logo: true,
+        phone: true,
+        primaryColor: true,
+      },
+    });
+
+    return NextResponse.json({ success: true, members, gym });
   } catch (error) {
     console.error('Fetch members error:', error);
     return NextResponse.json(

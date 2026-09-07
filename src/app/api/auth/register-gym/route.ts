@@ -80,8 +80,8 @@ export async function POST(req: Request) {
           trialStart: now,
           trialEndsAt: trialEndsAt,
           subscriptionStatus: 'TRIAL',
-          primaryColor: '#2563eb',
-          accentColor: '#3b82f6',
+          primaryColor: '#22c55e',
+          accentColor: '#10b981',
         },
       });
 
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
         data: {
           gymId: gym.id,
           userId: user.id,
-          title: 'FitPulse SaaS Platformuna Hoş Geldiniz! 🚀',
+          title: 'GymOS Platformuna Hoş Geldiniz! 🚀',
           message: `${gym.name} için 7 günlük ücretsiz deneme süreniz başladı. Tüm özellikleri sınırsızca deneyimleyebilirsiniz.`,
           type: 'SYSTEM',
         },

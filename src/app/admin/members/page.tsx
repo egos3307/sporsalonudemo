@@ -21,12 +21,17 @@ import {
   AlertCircle,
   CheckCircle2,
   Sparkles,
+  MessageCircle,
+  ExternalLink,
+  Copy,
+  Check,
 } from 'lucide-react';
 import { formatDateTr, formatDateTimeTr } from '@/lib/utils';
 
 export default function MembersPage() {
   const [members, setMembers] = useState<any[]>([]);
   const [trainers, setTrainers] = useState<any[]>([]);
+  const [gym, setGym] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   // Filters
@@ -39,6 +44,8 @@ export default function MembersPage() {
   const [newModalOpen, setNewModalOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<any>(null);
   const [detailLoading, setDetailLoading] = useState(false);
+  const [whatsappModalMember, setWhatsappModalMember] = useState<any>(null);
+  const [copiedText, setCopiedText] = useState(false);
 
   // New Member Form
   const [newForm, setNewForm] = useState({
@@ -73,6 +80,7 @@ export default function MembersPage() {
       const res = await fetch(`/api/members?${params.toString()}`);
       const data = await res.json();
       if (data.members) setMembers(data.members);
+      if (data.gym) setGym(data.gym);
     } catch (e) {
       console.error(e);
     } finally {
@@ -195,6 +203,42 @@ export default function MembersPage() {
           <Plus className="w-4 h-4" />
           <span>Yeni Üye Kaydı Aç</span>
         </button>
+      </div>
+
+      {/* Gym Website & WhatsApp Share Banner */}
+      <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+        <div className="flex items-start gap-3.5">
+          <div className="p-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 flex-shrink-0">
+            <MessageCircle className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-sm text-white">Salonunuzun Müşteri Web Sitesi Aktif!</h3>
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                Canlı Site
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 mt-1">
+              Müşterilerinize göndereceğiniz resmi web siteniz:{' '}
+              <span className="font-mono text-emerald-400 font-semibold">
+                /salon/{gym?.slug || 'fitzone'}
+              </span>
+              {' '}— Müşterileriniz burada sadece sizin salonunuzu görür!
+            </p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <a
+            href={`/salon/${gym?.slug || 'fitzone'}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs shadow-lg shadow-emerald-500/20 transition"
+          >
+            <span>Web Sitenizi Önizleyin</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -380,15 +424,28 @@ export default function MembersPage() {
 
                       {/* Action */}
                       <td className="px-5 py-4 text-right">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleOpenDetail(m.id);
-                          }}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-                        >
-                          <ChevronRight className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setWhatsappModalMember(m);
+                            }}
+                            title="WhatsApp ile Müşteriye Gönder"
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-600/15 hover:bg-[#25D366] text-emerald-500 hover:text-black font-bold text-[11px] border border-emerald-500/30 transition shadow-sm"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>WhatsApp</span>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleOpenDetail(m.id);
+                            }}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                          >
+                            <ChevronRight className="w-4 h-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -595,6 +652,40 @@ export default function MembersPage() {
                 </button>
               </div>
 
+              {/* WhatsApp Invitation Card */}
+              <div className="mt-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/60 shadow-sm">
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-bold text-xs">
+                    <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                    <span>WhatsApp Demo Sitesi & Giriş Bildirimi</span>
+                  </div>
+                  <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 rounded-full">
+                    Tek Tıkla
+                  </span>
+                </div>
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 mb-3">
+                  Üyenin telefonuna salon web sitesini ({`/salon/${gym?.slug || 'fitzone'}`}) ve müşteri kodunu ({selectedMember.memberCode}) gönderin.
+                </p>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setWhatsappModalMember(selectedMember)}
+                    className="flex-1 py-2.5 px-3 bg-[#25D366] hover:bg-[#20bd5a] text-black font-extrabold text-xs rounded-xl shadow transition flex items-center justify-center gap-1.5"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>WhatsApp Mesajı Hazırla & Gönder</span>
+                  </button>
+                  <a
+                    href={`/salon/${gym?.slug || 'fitzone'}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs transition flex items-center gap-1"
+                    title="Salon Web Sitesini Gör"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+
               {/* Member Quick Stats */}
               <div className="grid grid-cols-3 gap-2 my-5">
                 <div className="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
@@ -685,6 +776,89 @@ export default function MembersPage() {
               >
                 Kapat
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* WhatsApp Modal for Sending Site & Member Code */}
+      {whatsappModalMember && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl relative text-left">
+            <button
+              onClick={() => setWhatsappModalMember(null)}
+              className="absolute right-5 top-5 p-2 text-slate-400 hover:text-white rounded-full transition"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-2xl bg-[#25D366]/15 text-[#25D366] flex items-center justify-center flex-shrink-0">
+                <MessageCircle className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-lg text-white">Müşteriye WhatsApp ile Gönder</h3>
+                <p className="text-xs text-slate-400">
+                  {whatsappModalMember.firstName} {whatsappModalMember.lastName}{' '}
+                  {whatsappModalMember.phone ? `(${whatsappModalMember.phone})` : '(Telefon girilmemiş)'}
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-2 mb-5">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-semibold text-emerald-400">Gidecek Mesaj Şablonu:</span>
+                <span className="text-[10px] text-slate-500">Müşteriye Özel Oluşturuldu</span>
+              </div>
+              <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800/80 font-mono text-[11px] leading-relaxed whitespace-pre-wrap text-slate-200 select-all">
+{`Merhaba ${whatsappModalMember.firstName}! 💪 ${gym?.name || 'FitZone Pro Club'} ailemize hoş geldiniz.
+Size özel salon web sitemiz ve dijital üye portalınız hazır!
+
+🌐 Salon Web Sitemiz: ${typeof window !== 'undefined' ? window.location.origin : ''}/salon/${gym?.slug || 'fitzone'}
+🔑 Üye Giriş Kodunuz: ${whatsappModalMember.memberCode}
+📱 Üye Portalı Girişi: ${typeof window !== 'undefined' ? window.location.origin : ''}/activate-code
+
+Buradan giriş yaparak antrenman programınızı, diyet listenizi ve su takibinizi anında görüntüleyebilirsiniz. İyi antrenmanlar dileriz!`}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center gap-3">
+              <a
+                href={`https://wa.me/${(whatsappModalMember.phone || '').replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
+                  `Merhaba ${whatsappModalMember.firstName}! 💪 ${gym?.name || 'FitZone Pro Club'} ailemize hoş geldiniz.\nSize özel salon web sitemiz ve dijital üye portalınız hazır!\n\n🌐 Salon Web Sitemiz: ${typeof window !== 'undefined' ? window.location.origin : ''}/salon/${gym?.slug || 'fitzone'}\n🔑 Üye Giriş Kodunuz: ${whatsappModalMember.memberCode}\n📱 Üye Portalı Girişi: ${typeof window !== 'undefined' ? window.location.origin : ''}/activate-code\n\nBuradan giriş yaparak antrenman programınızı, diyet listenizi ve su takibinizi anında görüntüleyebilirsiniz. İyi antrenmanlar dileriz!`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-black font-black text-xs flex items-center justify-center gap-2 shadow-lg transition"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>WhatsApp'ta Aç ve Gönder</span>
+              </a>
+
+              <button
+                onClick={() => {
+                  const text = `Merhaba ${whatsappModalMember.firstName}! 💪 ${gym?.name || 'FitZone Pro Club'} ailemize hoş geldiniz.\nSize özel salon web sitemiz ve dijital üye portalınız hazır!\n\n🌐 Salon Web Sitemiz: ${window.location.origin}/salon/${gym?.slug || 'fitzone'}\n🔑 Üye Giriş Kodunuz: ${whatsappModalMember.memberCode}\n📱 Üye Portalı Girişi: ${window.location.origin}/activate-code\n\nBuradan giriş yaparak antrenman programınızı, diyet listenizi ve su takibinizi anında görüntüleyebilirsiniz. İyi antrenmanlar dileriz!`;
+                  navigator.clipboard.writeText(text);
+                  setCopiedText(true);
+                  setTimeout(() => setCopiedText(false), 2000);
+                }}
+                className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs flex items-center justify-center gap-2 border border-slate-700 transition"
+              >
+                {copiedText ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+                <span>{copiedText ? 'Kopyalandı!' : 'Metni Kopyala'}</span>
+              </button>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-800/80 text-center">
+              <a
+                href={`/salon/${gym?.slug || 'fitzone'}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-slate-400 hover:text-emerald-400 transition inline-flex items-center gap-1.5"
+              >
+                <span>Müşterinin Göreceği Salon Web Sitesini Aç</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
             </div>
           </div>
         </div>

@@ -17,6 +17,9 @@ import {
   Flame,
   CheckCircle2,
   Calendar,
+  ExternalLink,
+  Globe,
+  MessageCircle,
 } from 'lucide-react';
 import {
   BarChart,
@@ -94,13 +97,24 @@ export default function AdminDashboardPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <NextLink
-            href="/admin/check-in"
+        <div className="flex items-center gap-3 flex-wrap">
+          <a
+            href={`/salon/${gym?.slug || 'fitzone'}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-xl shadow-sm transition"
           >
+            <Globe className="w-4 h-4" />
+            <span>Salon Web Sitemi Gör</span>
+            <ExternalLink className="w-3.5 h-3.5 text-emerald-200" />
+          </a>
+
+          <NextLink
+            href="/admin/check-in"
+            className="flex items-center gap-2 px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl shadow-sm transition border border-slate-700"
+          >
             <QrCode className="w-4 h-4" />
-            <span>Turnike Giriş İstasyonu</span>
+            <span>Turnike QR</span>
           </NextLink>
 
           <NextLink
@@ -112,6 +126,75 @@ export default function AdminDashboardPage() {
           </NextLink>
         </div>
       </div>
+
+      {/* 0-Panel Quick Onboarding Guide for Fresh Gyms */}
+      {(kpis.totalMembers || 0) === 0 && (
+        <div className="p-6 sm:p-7 rounded-3xl bg-gradient-to-r from-emerald-950/40 via-slate-900 to-slate-900 border border-emerald-500/30 shadow-xl">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6">
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2 border border-emerald-500/30">
+                🚀 Salonunuz Başarıyla Kuruldu • 0-Panel Başlangıç
+              </div>
+              <h2 className="text-xl font-black text-white">
+                {gym?.name} için 3 Adımda Sistemi Canlıya Alın
+              </h2>
+              <p className="text-xs text-slate-400 mt-1">
+                Kendi logonuz, kendi antrenörleriniz ve müşterileriniz için özel web siteniz hazır.
+              </p>
+            </div>
+            <a
+              href={`/salon/${gym?.slug || 'fitzone'}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs shadow-lg shadow-emerald-500/25 transition flex-shrink-0"
+            >
+              <span>Salon Web Sitenizi Açın</span>
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <NextLink
+              href="/admin/settings"
+              className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition group block"
+            >
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold text-xs flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                1
+              </div>
+              <h4 className="font-bold text-xs text-white mb-1">Marka & Logo Ayarları</h4>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Salon logonuzu, adresinizi ve renklerinizi güncelleyin. Sitenizde anında görünür.
+              </p>
+            </NextLink>
+
+            <NextLink
+              href="/admin/trainers"
+              className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition group block"
+            >
+              <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 font-bold text-xs flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                2
+              </div>
+              <h4 className="font-bold text-xs text-white mb-1">Antrenörleri Ekleyin</h4>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Eğitmenlerinizi sisteme tanımlayın; uzmanlıkları doğrudan salon web sitenizde listelensin.
+              </p>
+            </NextLink>
+
+            <NextLink
+              href="/admin/members"
+              className="p-4 rounded-2xl bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 transition group block"
+            >
+              <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 font-bold text-xs flex items-center justify-center mb-3 group-hover:scale-105 transition">
+                3
+              </div>
+              <h4 className="font-bold text-xs text-white mb-1">Müşteri Ekleyin & WhatsApp Atın</h4>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Müşterinizi ekleyin ve yeşil WhatsApp butonuna basarak site linkinizi ve giriş kodunu gönderin!
+              </p>
+            </NextLink>
+          </div>
+        </div>
+      )}
 
       {/* 8 Core KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
