@@ -320,3 +320,44 @@ model Notification {
   @@index([userId])
   @@index([memberId])
 }
+
+model Lead {
+  id              String   @id @default(cuid())
+  name            String
+  phone           String?
+  phoneNormalized String?
+  address         String?
+  rating          Float?   @default(0)
+  reviews         Int?     @default(0)
+  website         String?
+  websiteDomain   String?
+  instagram       String?
+  googleMapsUrl   String?
+  placeId         String?
+  status          String   @default("NEW") // NEW, CONTACTED, WAITING, INTERESTED, NOT_INTERESTED, CUSTOMER
+  notes           String?  @default("")
+  searchQuery     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+  @@index([phoneNormalized])
+  @@index([placeId])
+  @@index([websiteDomain])
+  @@index([createdAt])
+}
+
+model LeadSearch {
+  id                  String   @id @default(cuid())
+  query               String
+  requestedLimit      Int      @default(50)
+  foundCount          Int      @default(0)
+  newLeadsCount       Int      @default(0)
+  status              String   @default("COMPLETED") // PENDING, PROCESSING, COMPLETED, FAILED
+  outscraperRequestId String?
+  errorMessage        String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([createdAt])
+}

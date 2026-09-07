@@ -57,7 +57,7 @@ async function main() {
       passwordHash: defaultPasswordHash,
       name: 'Kemal Yılmaz (Admin)',
       phone: '+90 532 111 2233',
-      role: 'GYM_ADMIN',
+      role: 'SUPER_ADMIN',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=120&auto=format&fit=crop&q=80',
     },
   });
@@ -1081,9 +1081,87 @@ async function main() {
         message: 'FitZone Pro Club deneme sürenizin bitmesine 5 gün kaldı. Tüm özellikleri sınırsızca test edebilirsiniz.',
         type: 'SYSTEM',
         isRead: false,
-        createdAt: new Date(now.getTime() - 48 * 3600 * 1000),
       },
     ],
+  });
+
+  // Sample B2B Leads for Lead Generator demo
+  await prisma.lead.deleteMany();
+  await prisma.leadSearch.deleteMany();
+
+  await prisma.lead.createMany({
+    data: [
+      {
+        name: 'Akdeniz Fitness Club',
+        phone: '+90 (532) 412 8899',
+        phoneNormalized: '905324128899',
+        address: 'İnönü Bulvarı No: 142, Yenişehir, Mersin',
+        rating: 4.8,
+        reviews: 142,
+        website: 'https://akdenizfitness.com',
+        websiteDomain: 'akdenizfitness.com',
+        instagram: 'https://instagram.com/akdenizfitness',
+        googleMapsUrl: 'https://maps.google.com/?q=Akdeniz+Fitness+Mersin',
+        status: 'INTERESTED',
+        notes: 'Yönetici Ahmet Bey ile WhatsApp üzerinden görüşüldü, demo paneli beğendi.',
+        searchQuery: 'Mersin spor salonları',
+      },
+      {
+        name: 'Toros Crossfit & Pilates',
+        phone: '+90 (533) 890 1234',
+        phoneNormalized: '905338901234',
+        address: 'Gazi Mustafa Kemal Bulvarı No: 88, Mezitli, Mersin',
+        rating: 4.6,
+        reviews: 98,
+        website: 'https://toroscrossfit.com.tr',
+        websiteDomain: 'toroscrossfit.com.tr',
+        instagram: 'https://instagram.com/toroscrossfit',
+        googleMapsUrl: 'https://maps.google.com/?q=Toros+Crossfit+Mersin',
+        status: 'CONTACTED',
+        notes: 'WhatsApp tanıtım mesajı iletildi, geri dönüş bekleniyor.',
+        searchQuery: 'Mersin spor salonları',
+      },
+      {
+        name: 'Olympus Gym Studio',
+        phone: '+90 (535) 678 4321',
+        phoneNormalized: '905356784321',
+        address: 'Atatürk Cad. Çamlıbel Mah. No: 23, Akdeniz, Mersin',
+        rating: 4.9,
+        reviews: 215,
+        website: 'https://olympusgym.com',
+        websiteDomain: 'olympusgym.com',
+        instagram: null,
+        googleMapsUrl: 'https://maps.google.com/?q=Olympus+Gym+Mersin',
+        status: 'NEW',
+        notes: 'Google Maps taramasıyla yeni bulundu, aranacak.',
+        searchQuery: 'Mersin spor salonları',
+      },
+      {
+        name: 'Zone Life Club Mersin',
+        phone: '+90 (530) 111 2233',
+        phoneNormalized: '905301112233',
+        address: 'Marina Karşısı, Eğriçam Mah. No: 12, Yenişehir, Mersin',
+        rating: 4.7,
+        reviews: 180,
+        website: null,
+        websiteDomain: null,
+        instagram: 'https://instagram.com/zonelifemersin',
+        googleMapsUrl: 'https://maps.google.com/?q=Zone+Life+Club+Mersin',
+        status: 'CUSTOMER',
+        notes: 'Sistemi satın aldı! Yıllık kurumsal üyelik aktifleştirildi.',
+        searchQuery: 'Mersin spor salonları',
+      },
+    ],
+  });
+
+  await prisma.leadSearch.create({
+    data: {
+      query: 'Mersin spor salonları',
+      requestedLimit: 50,
+      foundCount: 4,
+      newLeadsCount: 4,
+      status: 'COMPLETED',
+    },
   });
 
   console.log('Seed completed successfully!');

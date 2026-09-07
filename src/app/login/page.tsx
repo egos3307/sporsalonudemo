@@ -139,8 +139,8 @@ export default function LoginPage() {
                 onClick={() => handleDemoClick('admin')}
                 className="p-2 text-left rounded-lg bg-slate-950 border border-slate-800 hover:border-blue-500 text-slate-300 hover:text-white transition group"
               >
-                <p className="text-[11px] font-bold group-hover:text-blue-400">Gym Admin</p>
-                <p className="text-[10px] text-slate-500">FitZone Club (Kemal)</p>
+                <p className="text-[11px] font-bold group-hover:text-blue-400">Süper Admin / Yönetici</p>
+                <p className="text-[10px] text-slate-500">FitZone & B2B Lead Avcısı</p>
               </button>
 
               <button

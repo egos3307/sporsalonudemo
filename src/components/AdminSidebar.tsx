@@ -15,6 +15,7 @@ import {
   LogOut,
   Building2,
   ChevronRight,
+  Compass,
 } from 'lucide-react';
 import NextLink from 'next/link';
 
@@ -85,6 +86,17 @@ export default function AdminSidebar({
       icon: Settings,
       active: pathname.startsWith('/admin/settings'),
     },
+    ...(role === 'SUPER_ADMIN'
+      ? [
+          {
+            name: 'Potansiyel Müşteriler',
+            href: '/admin/leads',
+            icon: Compass,
+            active: pathname.startsWith('/admin/leads'),
+            badge: 'B2B',
+          },
+        ]
+      : []),
   ];
 
   const handleLogout = async () => {
@@ -116,7 +128,7 @@ export default function AdminSidebar({
           </h2>
           <span className="inline-flex items-center gap-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            {role === 'TRAINER' ? 'Antrenör Paneli' : 'Yönetim Paneli'}
+            {role === 'SUPER_ADMIN' ? 'Süper Admin (SaaS)' : role === 'TRAINER' ? 'Antrenör Paneli' : 'Yönetim Paneli'}
           </span>
         </div>
       </div>
