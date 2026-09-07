@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import NextLink from 'next/link';
 import {
   Utensils,
   CheckCircle2,
@@ -9,12 +10,20 @@ import {
   Salad,
   Clock,
   Sparkles,
+  ArrowLeft,
+  ChevronRight,
+  Droplets,
+  Apple,
+  Info,
+  Dumbbell,
 } from 'lucide-react';
 
 export default function MemberDietPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [completedMeals, setCompletedMeals] = useState<Record<string, boolean>>({});
+  const [completedMeals, setCompletedMeals] = useState<Record<string, boolean>>({
+    'meal-0': true,
+  });
 
   useEffect(() => {
     fetch('/api/member/me')
@@ -42,8 +51,9 @@ export default function MemberDietPage() {
   let consumedCarbs = 0;
   let consumedFat = 0;
 
-  meals.forEach((meal: any) => {
-    if (completedMeals[meal.id]) {
+  meals.forEach((meal: any, idx: number) => {
+    const key = meal.id || `meal-${idx}`;
+    if (completedMeals[key]) {
       (meal.items || []).forEach((it: any) => {
         consumedCalories += it.calories || 0;
         consumedProtein += it.protein || 0;
@@ -65,194 +75,248 @@ export default function MemberDietPage() {
 
   if (loading) {
     return (
-      <div className="space-y-4 animate-pulse">
-        <div className="h-28 bg-slate-100 dark:bg-slate-800 rounded-3xl"></div>
-        <div className="h-64 bg-slate-100 dark:bg-slate-800 rounded-3xl"></div>
+      <div className="space-y-6 animate-pulse">
+        <div className="h-16 bg-slate-900/80 rounded-2xl border border-slate-800" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="h-28 bg-slate-900/80 rounded-2xl border border-slate-800" />
+          <div className="h-28 bg-slate-900/80 rounded-2xl border border-slate-800" />
+          <div className="h-28 bg-slate-900/80 rounded-2xl border border-slate-800" />
+          <div className="h-28 bg-slate-900/80 rounded-2xl border border-slate-800" />
+        </div>
+        <div className="h-96 bg-slate-900/80 rounded-3xl border border-slate-800" />
       </div>
     );
   }
 
   if (!diet) {
     return (
-      <div className="text-center py-16">
-        <Utensils className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3" />
-        <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">
-          Diyet Programınız Hazırlanıyor
-        </h3>
-        <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto">
-          Antrenörünüz hedefinize uygun beslenme planını eklediğinde burada görebileceksiniz.
+      <div className="text-center py-20 bg-slate-900/90 rounded-3xl border border-slate-800 p-8 space-y-4">
+        <Utensils className="w-16 h-16 text-emerald-500 mx-auto" />
+        <h2 className="text-lg font-bold text-white">Diyet Programınız Hazırlanıyor</h2>
+        <p className="text-xs text-slate-400 max-w-sm mx-auto">
+          Antrenörünüz hedefinize özel günlük kalori ve makro beslenme planını eklediğinde burada öğün bazında listelenecektir.
         </p>
+        <NextLink
+          href="/member"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition"
+        >
+          <span>Panoya Dön</span>
+        </NextLink>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      {/* Title */}
-      <div>
-        <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
-          {diet.title}
-        </h2>
-        <p className="text-xs text-slate-500">
-          Öğünlerinizi tükettikçe işaretleyip günlük makro hedeflerinizi tamamlayın.
-        </p>
+    <div className="space-y-6">
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-800/80">
+        <div className="flex items-center gap-3">
+          <NextLink
+            href="/member"
+            className="p-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition"
+            title="Panoya dön"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </NextLink>
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                {diet.title}
+              </h1>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                Aktif Plan
+              </span>
+            </div>
+            <p className="text-xs text-slate-400 font-medium mt-0.5">
+              Tükettiğiniz öğünleri işaretleyerek günlük kalori ve makro hedefinizi takip edin.
+            </p>
+          </div>
+        </div>
+
+        <NextLink
+          href="/member/workout"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white text-xs font-bold transition self-start sm:self-auto"
+        >
+          <Dumbbell className="w-4 h-4 text-emerald-400" />
+          <span>Antrenman Programına Geç</span>
+        </NextLink>
       </div>
 
-      {/* Real-time Macro & Calorie Dashboard */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm space-y-4">
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-              Tüketilen Enerji
-            </span>
-            <div className="flex items-baseline gap-1 mt-0.5">
-              <span className="text-2xl font-extrabold text-slate-900 dark:text-white">
-                {consumedCalories}
-              </span>
-              <span className="text-xs text-slate-400 font-medium">/ {targetCalories} kcal</span>
-            </div>
+      {/* 4 Macro KPI Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Kalori */}
+        <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-lg space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-semibold text-slate-400">Kalori Hedefi</span>
+            <Flame className="w-4 h-4 text-amber-500" />
           </div>
-          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 font-mono">
-            %{calPercent} Alındı
-          </span>
-        </div>
-
-        {/* Big Calorie Bar */}
-        <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-300"
-            style={{ width: `${calPercent}%` }}
-          />
-        </div>
-
-        {/* 3 Macro Progress Bars */}
-        <div className="grid grid-cols-3 gap-3 pt-2">
-          {/* Protein */}
-          <div>
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-semibold text-blue-600">Protein</span>
-              <span className="font-bold text-slate-700 dark:text-slate-300">
-                {consumedProtein}/{targetProtein}g
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-blue-600 rounded-full transition-all"
-                style={{ width: `${proPercent}%` }}
-              />
-            </div>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-2xl font-black text-white">{consumedCalories}</span>
+            <span className="text-xs text-slate-400 font-mono">/ {targetCalories} kcal</span>
           </div>
-
-          {/* Carbs */}
-          <div>
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-semibold text-amber-600">Karb</span>
-              <span className="font-bold text-slate-700 dark:text-slate-300">
-                {consumedCarbs}/{targetCarbs}g
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-amber-500 rounded-full transition-all"
-                style={{ width: `${carbPercent}%` }}
-              />
-            </div>
-          </div>
-
-          {/* Fat */}
-          <div>
-            <div className="flex items-center justify-between text-[11px] mb-1">
-              <span className="font-semibold text-rose-600">Yağ</span>
-              <span className="font-bold text-slate-700 dark:text-slate-300">
-                {consumedFat}/{targetFat}g
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-rose-500 rounded-full transition-all"
-                style={{ width: `${fatPercent}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Meals Interactive List */}
-      <div className="space-y-3">
-        {meals.map((meal: any) => {
-          const isDone = !!completedMeals[meal.id];
-
-          return (
+          <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
             <div
-              key={meal.id}
-              className={`p-4 rounded-3xl border transition duration-200 ${
-                isDone
-                  ? 'bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-300 dark:border-emerald-800/60 shadow-sm'
-                  : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-sm'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      isDone ? 'bg-emerald-500 text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-500'
-                    }`}
-                  >
-                    {isDone ? '✓' : '🍽️'}
-                  </span>
-                  <h3
-                    className={`font-bold text-sm ${
-                      isDone
-                        ? 'line-through text-slate-500 dark:text-slate-400'
-                        : 'text-slate-900 dark:text-white'
-                    }`}
-                  >
-                    {meal.name}
-                  </h3>
-                </div>
+              className="h-full bg-amber-500 rounded-full transition-all duration-300"
+              style={{ width: `${calPercent}%` }}
+            />
+          </div>
+        </div>
 
-                {meal.time && (
-                  <span className="text-[11px] text-slate-400 font-mono font-medium flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> {meal.time}
-                  </span>
-                )}
-              </div>
+        {/* Protein */}
+        <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-lg space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-semibold text-slate-400">Protein</span>
+            <span className="text-[10px] font-bold text-emerald-400">%{proPercent}</span>
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-2xl font-black text-emerald-400">{consumedProtein}g</span>
+            <span className="text-xs text-slate-400 font-mono">/ {targetProtein}g</span>
+          </div>
+          <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-emerald-500 rounded-full transition-all duration-300"
+              style={{ width: `${proPercent}%` }}
+            />
+          </div>
+        </div>
 
-              {/* Items in meal */}
-              <div className="space-y-1.5 pl-8 mb-3">
-                {(meal.items || []).map((it: any) => (
-                  <div
-                    key={it.id}
-                    className="flex items-center justify-between text-xs py-1 border-b border-slate-100 dark:border-slate-800/50 last:border-0"
-                  >
-                    <span className="text-slate-700 dark:text-slate-300 font-medium">
-                      {it.food} <span className="text-slate-400 font-normal">({it.amount})</span>
+        {/* Karbonhidrat */}
+        <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-lg space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-semibold text-slate-400">Karbonhidrat</span>
+            <span className="text-[10px] font-bold text-blue-400">%{carbPercent}</span>
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-2xl font-black text-blue-400">{consumedCarbs}g</span>
+            <span className="text-xs text-slate-400 font-mono">/ {targetCarbs}g</span>
+          </div>
+          <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-blue-500 rounded-full transition-all duration-300"
+              style={{ width: `${carbPercent}%` }}
+            />
+          </div>
+        </div>
+
+        {/* Yağ */}
+        <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-lg space-y-2">
+          <div className="flex items-center justify-between text-xs">
+            <span className="font-semibold text-slate-400">Sağlıklı Yağ</span>
+            <span className="text-[10px] font-bold text-purple-400">%{fatPercent}</span>
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-2xl font-black text-purple-400">{consumedFat}g</span>
+            <span className="text-xs text-slate-400 font-mono">/ {targetFat}g</span>
+          </div>
+          <div className="w-full h-2 bg-slate-950 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-purple-500 rounded-full transition-all duration-300"
+              style={{ width: `${fatPercent}%` }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Meals Timeline List */}
+      <div className="space-y-4">
+        <h3 className="text-base font-black text-white tracking-tight flex items-center gap-2">
+          <Salad className="w-5 h-5 text-emerald-400" />
+          <span>Günlük Öğün Planı</span>
+        </h3>
+
+        <div className="grid grid-cols-1 gap-4">
+          {meals.map((meal: any, idx: number) => {
+            const mealKey = meal.id || `meal-${idx}`;
+            const isDone = completedMeals[mealKey];
+            const items = meal.items || [];
+
+            const mealCalories = items.reduce((acc: number, it: any) => acc + (it.calories || 0), 0);
+            const mealProtein = items.reduce((acc: number, it: any) => acc + (it.protein || 0), 0);
+
+            return (
+              <div
+                key={mealKey}
+                className={`p-5 rounded-3xl border transition-all ${
+                  isDone
+                    ? 'bg-slate-900/60 border-emerald-500/30'
+                    : 'bg-slate-900/90 border-slate-800/80 hover:border-slate-700'
+                }`}
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => toggleMeal(mealKey)}
+                      className={`w-7 h-7 rounded-full flex items-center justify-center border transition ${
+                        isDone
+                          ? 'bg-emerald-500 border-emerald-500 text-slate-950'
+                          : 'border-slate-600 hover:border-emerald-400 text-transparent'
+                      }`}
+                      title={isDone ? 'Tamamlandı' : 'Tamamla'}
+                    >
+                      <Check className="w-4 h-4 stroke-[3]" />
+                    </button>
+                    <div>
+                      <h4
+                        className={`text-sm font-black ${
+                          isDone ? 'line-through text-slate-400' : 'text-white'
+                        }`}
+                      >
+                        {meal.name}
+                      </h4>
+                      {meal.time && (
+                        <span className="text-[11px] text-slate-400 flex items-center gap-1 mt-0.5">
+                          <Clock className="w-3 h-3 text-emerald-400" />
+                          <span>{meal.time}</span>
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 self-end sm:self-auto">
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono font-bold text-amber-400">
+                      {mealCalories} kcal
                     </span>
-                    <span className="font-semibold text-slate-900 dark:text-white font-mono text-[11px]">
-                      {it.calories} kcal
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono font-bold text-emerald-400">
+                      {mealProtein}g Protein
                     </span>
                   </div>
-                ))}
-              </div>
+                </div>
 
-              {/* Check off button */}
-              <div className="pl-8">
-                <button
-                  onClick={() => toggleMeal(meal.id)}
-                  className={`w-full py-2 px-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 transition active:scale-98 ${
-                    isDone
-                      ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm'
-                      : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300'
-                  }`}
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>{isDone ? 'ÖĞÜN YENDİ ✓' : 'Tüketildi Olarak İşaretle'}</span>
-                </button>
+                {/* Meal items breakdown */}
+                <div className="mt-3 space-y-2">
+                  {items.map((it: any, itIdx: number) => (
+                    <div
+                      key={itIdx}
+                      className="p-3 rounded-2xl bg-slate-950/60 border border-slate-800/60 flex items-center justify-between text-xs"
+                    >
+                      <div>
+                        <p className="font-bold text-slate-200">{it.food}</p>
+                        <p className="text-[11px] text-slate-400">{it.amount}</p>
+                      </div>
+                      <div className="text-right text-[11px] font-mono text-slate-400">
+                        <span>{it.calories || 0} kcal</span>
+                        <span className="text-slate-600 mx-1.5">•</span>
+                        <span className="text-emerald-400 font-bold">{it.protein || 0}g Pro</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
+
+      {/* Trainer's Diet Notes */}
+      {diet.notes && (
+        <div className="p-5 rounded-3xl bg-slate-900/90 border border-slate-800/80 shadow-lg space-y-2">
+          <div className="flex items-center gap-2 text-white font-bold text-xs">
+            <Sparkles className="w-4 h-4 text-emerald-400" />
+            <span>Antrenör Beslenme Tavsiyeleri & Kurallar:</span>
+          </div>
+          <p className="text-xs text-slate-300 leading-relaxed">{diet.notes}</p>
+        </div>
+      )}
     </div>
   );
 }
