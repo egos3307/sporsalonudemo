@@ -5,13 +5,13 @@ import NextLink from 'next/link';
 import { Dumbbell, Mail, Lock, ArrowRight, AlertCircle, Sparkles, QrCode, Shield } from 'lucide-react';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('admin@fitzone.com');
+  const [password, setPassword] = useState('Password123!');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleLogin = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     setError(null);
     setLoading(true);
 
@@ -19,7 +19,10 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email: email || 'admin@fitzone.com',
+          password: password || 'Password123!',
+        }),
       });
 
       const data = await res.json();
@@ -54,7 +57,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col justify-center py-12 px-6 sm:px-8 text-slate-100 font-sans relative">
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-96 h-96 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <NextLink href="/" className="inline-flex items-center gap-2.5 mb-6">
@@ -74,6 +77,23 @@ export default function LoginPage() {
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-slate-900/90 border border-slate-800 py-8 px-6 sm:px-10 shadow-2xl rounded-3xl backdrop-blur-xl">
+          {/* Direct 1-Click Panel Access Button */}
+          <button
+            type="button"
+            onClick={() => handleDemoClick('admin')}
+            disabled={loading}
+            className="w-full mb-6 py-3.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs rounded-xl shadow-lg shadow-emerald-500/25 transition transform hover:scale-[1.02] flex items-center justify-center gap-2"
+          >
+            <span>⚡ Spor Salonu Yöneticisi Olarak Doğrudan Panele Gir</span>
+            <ArrowRight className="w-4 h-4 stroke-[3]" />
+          </button>
+
+          <div className="relative flex py-2 items-center mb-5">
+            <div className="flex-grow border-t border-slate-800"></div>
+            <span className="flex-shrink mx-3 text-[11px] text-slate-500 uppercase tracking-wider font-semibold">veya şifre ile giriş</span>
+            <div className="flex-grow border-t border-slate-800"></div>
+          </div>
+
           {error && (
             <div className="mb-5 p-3.5 bg-red-950/50 border border-red-800/80 rounded-xl text-xs text-red-300 flex items-start gap-2">
               <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />

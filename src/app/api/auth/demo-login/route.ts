@@ -20,7 +20,7 @@ export async function POST(req: Request) {
       expectedRole = 'GYM_ADMIN';
     }
 
-    const user = await prisma.user.findUnique({
+    let user = await prisma.user.findUnique({
       where: { email: targetEmail },
       include: {
         gym: true,
@@ -30,8 +30,19 @@ export async function POST(req: Request) {
     });
 
     if (!user) {
+      user = await prisma.user.findFirst({
+        where: { role: { in: ['SUPER_ADMIN', 'GYM_ADMIN'] } },
+        include: {
+          gym: true,
+          memberProfile: true,
+          trainerProfile: true,
+        },
+      });
+    }
+
+    if (!user) {
       return NextResponse.json(
-        { error: 'Demo kullanıcısı bulunamadı. Lütfen "npm run seed" çalıştırın.' },
+        { error: 'Demo kullanıcısı bulunamadı.' },
         { status: 404 }
       );
     }
@@ -66,12 +77,15 @@ export async function POST(req: Request) {
       },
     });
 
+    const proto = req.headers.get('x-forwarded-proto');
+    const isHttps = proto === 'https';
+
     response.cookies.set({
       name: COOKIE_NAME,
       value: token,
       httpOnly: true,
       path: '/',
-      secure: process.env.NODE_ENV === 'production',
+      secure: isHttps,
       maxAge: 7 * 24 * 60 * 60,
       sameSite: 'lax',
     });

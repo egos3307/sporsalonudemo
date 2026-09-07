@@ -135,12 +135,14 @@ export default function GymOSLandingPage() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <NextLink
-            href="/login"
-            className="px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 rounded-xl transition border border-slate-800"
+          <button
+            onClick={() => handleQuickDemo('admin')}
+            disabled={!!demoLoading}
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-white bg-slate-800 hover:bg-emerald-500 hover:text-black rounded-xl transition border border-slate-700 shadow-sm"
           >
-            Yönetici Girişi
-          </NextLink>
+            <span>{demoLoading === 'admin' ? 'Panele Yönlendiriliyor...' : 'Yönetici Girişi (Panele Gir)'}</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
           <NextLink
             href="/register"
             className="flex items-center gap-2 px-5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold text-xs rounded-xl shadow-lg shadow-emerald-500/25 transition transform hover:scale-[1.03]"
