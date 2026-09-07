@@ -1,0 +1,321 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Gym {
+  id                 String   @id @default(cuid())
+  name               String
+  slug               String   @unique
+  ownerName          String
+  email              String
+  phone              String?
+  logo               String?
+  primaryColor       String   @default("#2563eb")
+  accentColor        String   @default("#3b82f6")
+  address            String?
+  trialStart         DateTime @default(now())
+  trialEndsAt        DateTime
+  subscriptionStatus String   @default("TRIAL") // TRIAL, ACTIVE, EXPIRED, CANCELLED
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  users          User[]
+  trainers       Trainer[]
+  members        Member[]
+  checkIns       CheckIn[]
+  workoutPlans   WorkoutPlan[]
+  workoutLogs    WorkoutLog[]
+  dietPlans      DietPlan[]
+  measurements   Measurement[]
+  progressPhotos ProgressPhoto[]
+  timelineEvents TimelineEvent[]
+  notifications  Notification[]
+
+  @@index([slug])
+  @@index([subscriptionStatus])
+}
+
+model User {
+  id           String   @id @default(cuid())
+  gymId        String?
+  gym          Gym?     @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  email        String   @unique
+  passwordHash String
+  name         String
+  phone        String?
+  role         String   @default("MEMBER") // SUPER_ADMIN, GYM_ADMIN, TRAINER, MEMBER
+  avatar       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  trainerProfile Trainer?
+  memberProfile  Member?
+  notifications  Notification[]
+
+  @@index([gymId])
+  @@index([role])
+}
+
+model Trainer {
+  id          String   @id @default(cuid())
+  gymId       String
+  gym         Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialties String   @default("Fitness, Vücut Geliştirme")
+  bio         String?
+  phone       String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  members      Member[]
+  workoutPlans WorkoutPlan[]
+  dietPlans    DietPlan[]
+
+  @@index([gymId])
+}
+
+model Member {
+  id              String    @id @default(cuid())
+  gymId           String
+  gym             Gym       @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  userId          String?   @unique
+  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  memberCode      String    @unique // e.g. GYM-A7K92X
+  firstName       String
+  lastName        String
+  email           String
+  phone           String?
+  gender          String?   @default("ERKEK") // ERKEK, KADIN, DIGER
+  birthDate       DateTime?
+  membershipStart DateTime  @default(now())
+  membershipEnd   DateTime
+  status          String    @default("ACTIVE") // ACTIVE, EXPIRED, FROZEN, PENDING_ACTIVATION
+  trainerId       String?
+  trainer         Trainer?  @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  notes           String?
+  targetGoal      String?   @default("Kas Kazanımı & Kondisyon")
+  targetCalories  Int       @default(2200)
+  targetWaterMl   Int       @default(3000)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  checkIns       CheckIn[]
+  workoutPlans   WorkoutPlan[]
+  workoutLogs    WorkoutLog[]
+  dietPlans      DietPlan[]
+  measurements   Measurement[]
+  progressPhotos ProgressPhoto[]
+  timelineEvents TimelineEvent[]
+  notifications  Notification[]
+
+  @@index([gymId])
+  @@index([memberCode])
+  @@index([status])
+  @@index([trainerId])
+}
+
+model CheckIn {
+  id           String    @id @default(cuid())
+  gymId        String
+  gym          Gym       @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId     String
+  member       Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  checkInTime  DateTime  @default(now())
+  checkOutTime DateTime?
+  method       String    @default("QR_CODE") // QR_CODE, MANUAL
+
+  @@index([gymId])
+  @@index([memberId])
+  @@index([checkInTime])
+}
+
+model TimelineEvent {
+  id          String   @id @default(cuid())
+  gymId       String
+  gym         Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId    String
+  member      Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  type        String   // REGISTERED, CHECK_IN, CHECK_OUT, MEASUREMENT, WORKOUT_ASSIGNED, WORKOUT_COMPLETED, DIET_ASSIGNED, STATUS_CHANGE
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+
+  @@index([gymId])
+  @@index([memberId])
+}
+
+model WorkoutPlan {
+  id          String       @id @default(cuid())
+  gymId       String
+  gym         Gym          @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId    String
+  member      Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  trainerId   String?
+  trainer     Trainer?     @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  title       String
+  description String?
+  startDate   DateTime     @default(now())
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  days        WorkoutDay[]
+
+  @@index([gymId])
+  @@index([memberId])
+}
+
+model WorkoutDay {
+  id        String      @id @default(cuid())
+  planId    String
+  plan      WorkoutPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  dayName   String      // Pazartesi, Salı, Çarşamba, etc.
+  focus     String      // Göğüs & Ön Kol, Bacak, vb.
+  order     Int         @default(1)
+  exercises Exercise[]
+
+  @@index([planId])
+}
+
+model Exercise {
+  id              String     @id @default(cuid())
+  workoutDayId    String
+  workoutDay      WorkoutDay @relation(fields: [workoutDayId], references: [id], onDelete: Cascade)
+  name            String
+  sets            Int        @default(4)
+  reps            String     @default("10-12")
+  weight          String?    @default("50 KG")
+  restTimeSeconds Int        @default(90)
+  notes           String?
+  videoUrl        String?
+  order           Int        @default(1)
+
+  @@index([workoutDayId])
+}
+
+model WorkoutLog {
+  id                 String   @id @default(cuid())
+  gymId              String
+  gym                Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId           String
+  member             Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  workoutDayTitle    String   @default("Antrenman")
+  completedDate      DateTime @default(now())
+  durationMinutes    Int      @default(45)
+  completedExercises String   // JSON array of exercise completion details
+  notes              String?
+
+  @@index([gymId])
+  @@index([memberId])
+}
+
+model DietPlan {
+  id             String   @id @default(cuid())
+  gymId          String
+  gym            Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId       String
+  member         Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  trainerId      String?
+  trainer        Trainer? @relation(fields: [trainerId], references: [id], onDelete: SetNull)
+  title          String
+  targetCalories Int      @default(2400)
+  targetProtein  Int      @default(160)
+  targetCarbs    Int      @default(220)
+  targetFat      Int      @default(70)
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  meals          Meal[]
+
+  @@index([gymId])
+  @@index([memberId])
+}
+
+model Meal {
+  id         String     @id @default(cuid())
+  dietPlanId String
+  dietPlan   DietPlan   @relation(fields: [dietPlanId], references: [id], onDelete: Cascade)
+  name       String     // Kahvaltı, Ara Öğün, Öğle, Akşam, etc.
+  time       String?
+  order      Int        @default(1)
+  items      MealItem[]
+
+  @@index([dietPlanId])
+}
+
+model MealItem {
+  id       String @id @default(cuid())
+  mealId   String
+  meal     Meal   @relation(fields: [mealId], references: [id], onDelete: Cascade)
+  food     String
+  amount   String
+  calories Int    @default(0)
+  protein  Int    @default(0)
+  carbs    Int    @default(0)
+  fat      Int    @default(0)
+
+  @@index([mealId])
+}
+
+model Measurement {
+  id         String   @id @default(cuid())
+  gymId      String
+  gym        Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId   String
+  member     Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  date       DateTime @default(now())
+  weight     Float
+  height     Float?
+  bodyFat    Float?
+  muscleMass Float?
+  waist      Float?
+  chest      Float?
+  arm        Float?
+  leg        Float?
+  shoulder   Float?
+  notes      String?
+
+  @@index([gymId])
+  @@index([memberId])
+}
+
+model ProgressPhoto {
+  id        String   @id @default(cuid())
+  gymId     String
+  gym       Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  memberId  String
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now())
+  imageUrl  String
+  angle     String   @default("FRONT") // FRONT, SIDE, BACK
+  weight    Float?
+  notes     String?
+
+  @@index([gymId])
+  @@index([memberId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  gymId     String
+  gym       Gym      @relation(fields: [gymId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memberId  String?
+  member    Member?  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String   @default("SYSTEM") // WORKOUT, DIET, MEMBERSHIP, SYSTEM, REMINDER
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([gymId])
+  @@index([userId])
+  @@index([memberId])
+}
