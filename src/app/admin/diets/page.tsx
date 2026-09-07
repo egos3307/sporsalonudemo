@@ -85,6 +85,7 @@ export default function DietsAdminPage() {
   useEffect(() => {
     fetchDiets();
     fetchMembers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addMeal = () => {

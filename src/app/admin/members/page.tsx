@@ -97,6 +97,7 @@ export default function MembersPage() {
       fetchMembers();
     }, 200);
     return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search, statusFilter, trainerFilter, expiringFilter]);
 
   const handleOpenDetail = async (memberId: string) => {

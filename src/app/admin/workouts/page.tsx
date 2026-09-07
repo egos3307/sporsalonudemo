@@ -116,6 +116,7 @@ export default function WorkoutsAdminPage() {
   useEffect(() => {
     fetchWorkouts();
     fetchMembers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const addDay = () => {
